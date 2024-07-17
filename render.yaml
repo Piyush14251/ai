@@ -1,9 +1,6 @@
 services:
   - type: web
-    name: Test_case_Generator
-    env: python
-    buildCommand: |
-      apt-get update && \
-      apt-get install -y tesseract-ocr && \
-      pip install -r requirements.txt
+    name: my-web-service
+    env: docker
+    dockerfilePath: ./Dockerfile
     startCommand: python app.py
