@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="#">
+    <title>PDF Test Case Generator</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: gray;
+        }
+        .ring {
+            display: none;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 150px;
+            height: 150px;
+            background: black;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 150px;
+            font-family: sans-serif;
+            font-size: 20px;
+            color: #fff000;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            text-shadow: 0 0 10px #fff000;
+            box-shadow: 0 0 20px rgba(0, 0, 0, .5);
+            z-index: 1001;
+        }
+        .ring:before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            width: 100%;
+            height: 100%;
+            border: 3px solid transparent;
+            border-top: 3px solid #fff000;
+            border-right: 3px solid #fff000;
+            border-radius: 50%;
+            animation: animateC 2s linear infinite;
+        }
+        .ring span {
+            display: block;
+            position: absolute;
+            top: calc(50% - 2px);
+            left: 50%;
+            width: 50%;
+            height: 4px;
+            background: transparent;
+            transform-origin: left;
+            animation: animate 2s linear infinite;
+        }
+        .ring span:before {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #fff000;
+            top: -6px;
+            right: -8px;
+            box-shadow: 0 0 20px #fff000;
+        }
+        @keyframes animateC {
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+        @keyframes animate {
+            0% {
+                transform: rotate(45deg);
+            }
+            100% {
+                transform: rotate(405deg);
+            }
+        }
+        #loading-background {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(169, 169, 169, 0.7);
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading-background"></div>
+    <div class="ring" id="loading">Loading
+        <span></span>
+    </div>
+    <div class="container">
+        <h1 class="mt-5">PDF Test Case Generator</h1>
+        <form method="POST" enctype="multipart/form-data" onsubmit="showLoading()">
+            <div class="form-group">
+                <label for="prompt">Input Prompt</label>
+                <input type="text" class="form-control" id="prompt" name="prompt" required>
+            </div>
+            <div class="form-group">
+                <label for="pdf">Upload PDF</label>
+                <input type="file" class="form-control-file" id="pdf" name="pdf" accept="application/pdf" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Generate Test Cases</button>
+        </form>
+        
+        {% if test_cases %}
+        <div class="mt-5">
+            <h2>Generated Test Cases</h2>
+            <pre>{{ test_cases }}</pre>
+        </div>
+        {% endif %}
+    </div>
+    <script>
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('loading-background').style.display = 'block';
+            document.body.style.backgroundColor = 'gray'; // Change background color to gray
+        }
+    </script>
+</body>
+</html>
