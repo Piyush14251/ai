@@ -27,6 +27,13 @@ if not os.path.exists(app.config['UPLOAD_FOLDER']):
 tesseract_path = shutil.which('tesseract')
 if tesseract_path:
     pytesseract.pytesseract.tesseract_cmd = tesseract_path
+else:
+    logging.error("Tesseract is not installed or it's not in your PATH.")
+    print("Tesseract is not installed or it's not in your PATH.")
+
+# Print environment and PATH for debugging
+print("Environment PATH:", os.environ['PATH'])
+print("Tesseract path:", tesseract_path)
 
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
