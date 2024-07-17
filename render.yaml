@@ -1,11 +1,10 @@
 services:
   - type: web
-    name: your-service-name
+    name: my-service
     env: python
-    buildCommand: "./install_tesseract.sh && pip install -r requirements.txt"
-    startCommand: "python app.py"
-    build:
-      # Install Tesseract OCR
-      installPackages:
-        - tesseract-ocr
-        - libtesseract-dev
+    plan: free
+    buildCommand: |
+      sudo apt-get update
+      sudo apt-get install -y tesseract-ocr
+      pip install -r requirements.txt
+    startCommand: python app.py
