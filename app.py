@@ -6,29 +6,34 @@ from PIL import Image
 import io
 import openai
 import shutil
-import logging
-from dotenv import load_dotenv
-
-# Load environment variables
-load_dotenv()
-
-# Set the TESSDATA_PREFIX environment variable
-os.environ['TESSDATA_PREFIX'] = os.getenv('TESSDATA_PREFIX')
+import subprocess
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
-app.secret_key = os.urandom(24)
+app.secret_key = 'supersecretkey'
 
 # Ensure the uploads folder exists
 if not os.path.exists(app.config['UPLOAD_FOLDER']):
     os.makedirs(app.config['UPLOAD_FOLDER'])
 
-# Set the Tesseract path
+# Set the Tesseract path and OpenAI API key from environment variables
 tesseract_path = shutil.which('tesseract')
 if tesseract_path:
     pytesseract.pytesseract.tesseract_cmd = tesseract_path
+else:
+    raise EnvironmentError("Tesseract is not installed or it's not in your PATH. See README file for more information.")
 
 openai.api_key = os.getenv('OPENAI_API_KEY')
+
+os.environ['TESSDATA_PREFIX'] = '/usr/share/tesseract-ocr/4.00/tessdata/'
+
+# Verify Tesseract installation
+try:
+    tesseract_version = subprocess.run(['tesseract', '--version'], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True)
+    app.logger.info(f'Tesseract version: {tesseract_version.stdout}')
+except Exception as e:
+    app.logger.error(f'Error verifying Tesseract installation: {e}')
+    raise EnvironmentError("Tesseract is not installed or it's not in your PATH. See README file for more information.")
 
 def extract_text_from_pdf(pdf_path):
     pdf_document = fitz.open(pdf_path)
@@ -78,30 +83,28 @@ def index():
     if request.method == 'POST':
         prompt = request.form['prompt']
         pdf_file = request.files['pdf']
-
+        
         if pdf_file:
             pdf_path = os.path.join(app.config['UPLOAD_FOLDER'], pdf_file.filename)
             pdf_file.save(pdf_path)
-
+            
             try:
                 pdf_text = extract_text_from_pdf(pdf_path)
                 images = extract_images_from_pdf(pdf_path)
                 ocr_text = ocr_images(images)
                 combined_text = pdf_text + ocr_text
-
+                
                 text_chunks = split_text(combined_text)
                 test_cases = []
                 for chunk in text_chunks:
                     test_cases.append(generate_test_cases(chunk, prompt))
-
+                
                 final_test_cases = "\n\n".join(test_cases)
-                flash('Test cases generated successfully!', 'success')
                 return render_template('index.html', prompt=prompt, test_cases=final_test_cases)
-
             except Exception as e:
-                logging.error(f"Error processing the PDF: {e}")
-                flash(f"An error occurred: {e}", 'danger')
-
+                app.logger.error(f"Error processing the PDF: {e}")
+                flash(f"Error processing the PDF: {e}")
+    
     return render_template('index.html', prompt='', test_cases='')
 
 if __name__ == '__main__':
