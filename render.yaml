@@ -1,13 +1,12 @@
 services:
-  - type: web
-    name: your-app-name
+  - name: my-service
+    type: web
     env: python
-    region: your-region
     buildCommand: |
-      apt-get update && \
-      apt-get install -y tesseract-ocr libtesseract-dev libleptonica-dev && \
+      apt-get update
+      apt-get install -y tesseract-ocr
       pip install -r requirements.txt
-    startCommand: gunicorn app:app
+    startCommand: python app.py
     envVars:
       - key: OPENAI_API_KEY
         value: ${{ OPENAI_API_KEY }}

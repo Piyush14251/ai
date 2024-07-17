@@ -1,13 +1,19 @@
 import os
 from flask import Flask, request, render_template, flash
 import fitz  # PyMuPDF
-import pytesseract
 from PIL import Image
 import io
 import openai
 import shutil
 import logging
 from dotenv import load_dotenv
+import pytesseract
+
+# Set the tesseract command path
+pytesseract.pytesseract.tesseract_cmd = r'/usr/bin/tesseract'
+
+# Your existing code
+
 
 # Load environment variables
 load_dotenv()
