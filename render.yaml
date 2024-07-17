@@ -2,6 +2,7 @@ services:
   - type: web
     name: your-app-name
     env: python
+    region: your-region
     buildCommand: |
       apt-get update && \
       apt-get install -y tesseract-ocr libtesseract-dev && \
