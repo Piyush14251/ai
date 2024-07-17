@@ -9,12 +9,6 @@ import logging
 from dotenv import load_dotenv
 import pytesseract
 
-# Set the tesseract command path
-pytesseract.pytesseract.tesseract_cmd = r'/usr/bin/tesseract'
-
-# Your existing code
-
-
 # Load environment variables
 load_dotenv()
 
@@ -40,6 +34,7 @@ else:
 # Print environment and PATH for debugging
 print("Environment PATH:", os.environ['PATH'])
 print("Tesseract path:", tesseract_path)
+print("TESSDATA_PREFIX:", os.getenv('TESSDATA_PREFIX'))
 
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
